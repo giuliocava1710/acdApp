@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "926148976444-0s6qotaj1m7jpt482k2075nk5e756lgq.apps.googleusercontent.com",
+          "client_id": "926148976444-rcn3vc2ioros5gegmhh99hmet8ji7ule.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.Acdapp.app",
-            "certificate_hash": "a359fba3ac4debf4707fd973b6e57cddb6b1a3df"
+            "certificate_hash": "0e616e95f928d274579a2dd02e5397a5e9acf349"
           }
         },
         {

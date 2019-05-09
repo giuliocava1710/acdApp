@@ -16,19 +16,23 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity<setOnClickListener> extends AppCompatActivity {
+
+public class MainActivity<setOnClickListener> extends AppCompatActivity  implements UserInfoDialog.UserInfoDialogListener {
 
     Context context;
+    UserInfoDialog dialog;
 
     public final static int PICK_IMAGE = 1;
     @Override
@@ -36,11 +40,41 @@ public class MainActivity<setOnClickListener> extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FirebaseApp.initializeApp(this);
+        //FirebaseApp.initializeApp(this);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        Log.d("USERINFO", "Nome : " + user.getDisplayName() + " Codie : " + user.getUid());
 
         context = getApplicationContext();
 
-        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+        /*Passo oggetto user a dialog*/
+        ArrayList <String>infoUtente = new ArrayList<>();
+
+        /*prendo informazionin dell'utente loggato*/
+        infoUtente.add(0,user.getDisplayName());
+        infoUtente.add(1,user.getEmail());
+        infoUtente.add(2,user.getPhoneNumber());
+
+
+        /*toast che verifica il valore del numero , l'altra volta dava errore */
+        if(infoUtente.get(2)!= null){
+            Toast toast = new Toast(context);
+            toast.makeText(context,infoUtente.get(2).toString(),Toast.LENGTH_LONG);
+        }
+
+
+        dialog = UserInfoDialog.newInstance();
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("UserBundle", infoUtente);
+        dialog.setArguments(bundle);
+
+
+        /*evita che con un doppio tap l'utente skippi il dialog*/
+        dialog.setCancelable(false);
+        dialog.show(getSupportFragmentManager(), "USER INFO DIALOG");
+
+        findViewById(R.id.btnCaricaFoto).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
@@ -69,12 +103,10 @@ public class MainActivity<setOnClickListener> extends AppCompatActivity {
                 user.put("valoreLettura", valoreLettura.getText().toString());
 
 
-                /*  al posto di GG nel .document bisogna mettere l' id di google ottenuto tramite l'accesso nel google account
-                *   in firestore ci saranno due tabelle una user e l altra lettura che si collega a user con il codice utente
-                *
-                *
+                /* Inserimento della lettura del contatore all'evento click sul pulsante invia
+                La lettura viene legata al codice UID dell'utente loggato
                 * */
-                db.collection("users").document("GG")
+                db.collection("Letture").document( FirebaseAuth.getInstance().getCurrentUser().getUid())
                         .set(user, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -122,6 +154,17 @@ public class MainActivity<setOnClickListener> extends AppCompatActivity {
                 }
             });
         }
+    }
+
+
+    /*il metodin del dialog sono utilizzabili da questa activity perchè è come se fosse
+    * un interfaccia che viene implementata in questa activity
+    @Override */
+    public void onUserInfoDialogOkPressed(String nome, String cognome,String mail,String telefono) {
+        /* una volta confermate le informazioni tramite il dialog da questo metodo occorre
+        * caricare le informazioni  dell'utente su firebase */ //TODO
+        Log.d("USERINFODIALOG", nome + " " + cognome + " " + mail + "" + telefono );
+        dialog.dismiss();
     }
 
 

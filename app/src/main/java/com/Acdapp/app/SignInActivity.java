@@ -1,12 +1,16 @@
 package com.Acdapp.app;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import com.firebase.ui.auth.ui.idp.SingleSignInActivity;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.firebase.ui.auth.AuthMethodPickerLayout;
@@ -15,6 +19,8 @@ import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 
 
 import java.util.Arrays;
@@ -29,7 +35,7 @@ public class SignInActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_in);
+        //setContentView(R.layout.activity_sign_in);
         // Inizializzazione dei servizi di Firebase (richiesto)
         FirebaseApp.initializeApp(this);
 
@@ -46,6 +52,20 @@ public class SignInActivity extends AppCompatActivity {
                     .setEmailButtonId(R.id.email_button) // Selezione dell'id del pulsante di accesso con l'email nel layout
                     .build();
             */
+
+
+            // You must provide a custom layout XML resource and configure at least one
+            // provider button ID. It's important that that you set the button ID for every provider
+            // that you have enabled.
+
+
+            AuthMethodPickerLayout customLayout = new AuthMethodPickerLayout
+                    .Builder(R.layout.activity_sign_in)
+                    .setGoogleButtonId(R.id.btnGoogle)
+                    .setEmailButtonId(R.id.btnEmail)
+                    .build();
+
+
             // Selezione dei metodi di accesso consentiti
             List<AuthUI.IdpConfig> availableProviders = Arrays.asList(
                     new AuthUI.IdpConfig.GoogleBuilder().build(), // Servizio di accesso tramite Google
@@ -53,8 +73,8 @@ public class SignInActivity extends AppCompatActivity {
 
 
             startActivityForResult(
-                    AuthUI.getInstance()
-                            .createSignInIntentBuilder() // Creazione di un intent per il login
+                    AuthUI.getInstance().createSignInIntentBuilder()
+                            .setAuthMethodPickerLayout(customLayout)
                             .setAvailableProviders(availableProviders)//.setTheme(R.style.AppTheme) // Impostazione del tema da applicare al layout
                             .setIsSmartLockEnabled(false)// Disattivazione di smartLock
                             .setAlwaysShowSignInMethodScreen(true) // Impostazione dei servizi disponibili
