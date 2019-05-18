@@ -1,6 +1,7 @@
 package com.Acdapp.app;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,26 +13,28 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class AdapterLetture extends RecyclerView.Adapter<AdapterLetture.LettureViewHolder> {
 
-
-
     private Context mCtx;
-    private List<Lettura> listaLetture;
+    private ArrayList<Lettura> listaLetture;
 
-    public AdapterLetture(Context mCtx, List<Lettura> listaLetture) {
+    public AdapterLetture(Context mCtx, ArrayList<Lettura> listaLetture) {
         this.mCtx = mCtx;
         this.listaLetture = listaLetture;
+
+        for(Lettura lettura : listaLetture) Log.d("LETTURA", lettura.toString());
     }
 
     @NonNull
     @Override
     public LettureViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mCtx).inflate(R.layout.lista_letture, parent, false);
-        return new LettureViewHolder(view);
+        return new LettureViewHolder(LayoutInflater.from(mCtx).inflate(R.layout.storico_letture,
+                null, false));
     }
 
     @Override
@@ -43,7 +46,9 @@ public class AdapterLetture extends RecyclerView.Adapter<AdapterLetture.LettureV
         holder.cognomeUtente.setText(lettura.cognomeUtente);
         holder.valoreLettura.setText("Valore lettura: " + lettura.valoreLettura);
         holder.data.setText("Data: " + lettura.data);
-        holder.imagePath.setText("Path Immagine" + lettura.imagePath);
+
+        Picasso.get().load(lettura.imagePath).into(holder.imagePath);
+        //holder.imagePath.setText("Path Immagine" + lettura.imagePath);
     }
 
     private void caricaImmagine(String pathImmagine, ImageView imgv) {
@@ -52,6 +57,7 @@ public class AdapterLetture extends RecyclerView.Adapter<AdapterLetture.LettureV
 
     @Override
     public int getItemCount() {
+        Log.d("COUNTZ", "COUNT");
         return listaLetture.size();
     }
 
@@ -59,7 +65,8 @@ public class AdapterLetture extends RecyclerView.Adapter<AdapterLetture.LettureV
     /* sottoclasse */
     class LettureViewHolder extends RecyclerView.ViewHolder {
 
-        TextView codiceUser,codiceUtenteBolletta,nomeUtente,cognomeUtente,valoreLettura,data,imagePath;
+        TextView codiceUser,codiceUtenteBolletta,nomeUtente,cognomeUtente,valoreLettura,data;
+        ImageView imagePath;
 
 
         public LettureViewHolder(@NonNull View itemView) {
@@ -71,7 +78,7 @@ public class AdapterLetture extends RecyclerView.Adapter<AdapterLetture.LettureV
             cognomeUtente = itemView.findViewById(R.id.cognomeUtente);
             valoreLettura = itemView.findViewById(R.id.valoreLettura);
             data = itemView.findViewById(R.id.data);
-            imagePath = itemView.findViewById(R.id.imagePath);
+            imagePath = itemView.findViewById(R.id.imageView);
 
         }
     }

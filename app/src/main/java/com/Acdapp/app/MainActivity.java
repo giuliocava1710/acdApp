@@ -31,7 +31,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -41,8 +44,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import static android.graphics.Color.*;
 
@@ -133,7 +138,7 @@ public class MainActivity<setOnClickListener> extends AppCompatActivity  impleme
         /*instanzia il dialog per conferma delle informazioni*/
         dialog = UserInfoDialog.newInstance();
 
-        Bundle bundle = new Bundle();
+        final Bundle bundle = new Bundle();
         /*passaggio dei dati al dialog tramite Bundle*/
         bundle.putSerializable("UserBundle", infoUtente);
         dialog.setArguments(bundle);
@@ -155,17 +160,37 @@ public class MainActivity<setOnClickListener> extends AppCompatActivity  impleme
             @Override
             public void onClick(View v) {
 
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                Query capitalCities = db.collection("Letture").whereEqualTo("codiceUser", codiceUser);
+                capitalCities.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        ArrayList<Lettura> letture = new ArrayList<>();
+                        List<DocumentSnapshot> query = Objects.requireNonNull(task.getResult()).getDocuments();
+                        for(DocumentSnapshot document : query)
+                            letture.add(new Lettura(document));
+
+                        Intent i = new Intent(MainActivity.this, ActivityStorico.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("letture", letture);
+                        i.putExtras(bundle);
+                        startActivity(i);
+                    }
+                });
+
+
                 /*
                 FragmentStoricoLetture fm = FragmentStoricoLetture.newInstance(null,null);
                 FragmentManager fMan = getSupportFragmentManager();
                 fMan.beginTransaction().replace(R.id.frameLayoutStorico,fm,"fragment storico").commit();
                 */
-                FragmentStoricoLetture fsl = FragmentStoricoLetture.newInstance(null,null);
+                /*FragmentStoricoLetture fsl = FragmentStoricoLetture.newInstance(null,null);
                 FragmentManager manager = getSupportFragmentManager();
                 FragmentTransaction transaction = manager.beginTransaction();
                 transaction.replace(R.id.frameLayoutStorico,fsl,"Fragment storico letture");
                 transaction.addToBackStack(null);
-                transaction.commit();
+                transaction.commit();*/
+
 
             }
         });
