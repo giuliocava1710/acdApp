@@ -1,6 +1,7 @@
 package com.Acdapp.app;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,9 +26,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.Acdapp.app.MainActivity.validateNameSurname;
+
 /*bisogna vedere come indicare i campi obbligatori  che l'utente deve confermare o evetualmente inserire
 * incare con un asterisco e controllare la validatà dei campi , quidi inserire dati nel db
-* 1) aggiungere delle label che indicano i campi da confermare ,per ora ci sono solo text box///TODO
+* 1) aggiungere delle label che indicano i campi da confermare ,per ora ci sono solo text box
+* 2)controllare campo telefono se viene settato oppure no
+* 3) vedere questione fragment e storico letture , possibilità all utetente di fare piu lettura
+* adesso se l'utente immette una due letture la seconda sovrascrive la prima///TODO
 
 
 /*dialog creato dopo il login che prima di dare accesso alla main activity chiedi all'utente di confermare le informazioni
@@ -36,8 +43,15 @@ public class UserInfoDialog extends DialogFragment {
 
     UserInfoDialogListener mListener = null;
 
+    private EditText nomeUtente = null;
+    private EditText cognomeUtente = null;
+    private EditText mailUtente = null;
+    private EditText telefonoUtente = null;
+
+    public boolean valoreControllo;
+
     public interface UserInfoDialogListener {
-        void onUserInfoDialogOkPressed(String nome, String cognome,String mail,String telefono);
+        void onUserInfoDialogOkPressed(String nome, String cognome,String mail,String telefono,Boolean ret);
     }
     /*costruttore dialog*/
     static public UserInfoDialog newInstance() {
@@ -63,6 +77,11 @@ public class UserInfoDialog extends DialogFragment {
         FragmentManager fm = getChildFragmentManager();
         final View vM = inflater.inflate(R.layout.user_info_dialog, container, false); //TODO
 
+        nomeUtente = (EditText) vM.findViewById(R.id.txtNomeDialog);
+        cognomeUtente = (EditText) vM.findViewById(R.id.txtCognomeDialog);
+        mailUtente = (EditText) vM.findViewById(R.id.txtMailDialog);
+        telefonoUtente = (EditText) vM.findViewById(R.id.txtTelefonoDialog);
+
         /*prendo dati dal bundle*/
 
         Bundle bundle = getArguments();
@@ -72,72 +91,73 @@ public class UserInfoDialog extends DialogFragment {
         * una sorta di precompilazione con le informazioni che gia possediamo dell'utente
         * delle quali poi chiederemo conferma*/
 
-        EditText txtNome =(EditText) vM.findViewById(R.id.txtNomeDialog);
-        EditText txtCognome =(EditText) vM.findViewById(R.id.txtCognomeDialog);
+
 
         String splitNomeCognome []= infoUtente.get(0).toString().split(" ");
-        txtNome.setText(splitNomeCognome[0],TextView.BufferType.EDITABLE);
-        txtCognome.setText(splitNomeCognome[1],TextView.BufferType.EDITABLE);
+        nomeUtente.setText(splitNomeCognome[0],TextView.BufferType.EDITABLE);
+        cognomeUtente.setText(splitNomeCognome[1],TextView.BufferType.EDITABLE);
 
+        mailUtente.setText(infoUtente.get(1).toString(),TextView.BufferType.EDITABLE);
+        telefonoUtente.setText(infoUtente.get(2).toString(),TextView.BufferType.EDITABLE);
 
-        EditText txtMail =(EditText) vM.findViewById(R.id.txtMailDialog);
-        txtMail.setText(infoUtente.get(1).toString(),TextView.BufferType.EDITABLE);
-
-        EditText txtTelefono = vM.findViewById(R.id.txtTelefonoDialog);
-        txtTelefono.setText(infoUtente.get(2).toString(),TextView.BufferType.EDITABLE);
 
 
 
         /*EditText editText = (EditText)findViewById(R.id.edit_text);
         editText.setText("Google is your friend.", TextView.BufferType.EDITABLE);*/
+
         vM.findViewById(R.id.btnConfermaDialog).setOnClickListener(new View.OnClickListener() {
+
+            /*Caricamento dati utente sul database*/
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
             @Override
-            public void
-
-            onClick(View v) {
-
-                EditText nomeUtente = (EditText) vM.findViewById(R.id.txtNomeDialog);
-                EditText cognomeUtente = (EditText) vM.findViewById(R.id.txtCognomeDialog);
-                EditText mailUtente = (EditText) vM.findViewById(R.id.txtMailDialog);
-                EditText telefonoUtente = (EditText) vM.findViewById(R.id.txtTelefonoDialog);
-
-                mListener.onUserInfoDialogOkPressed( nomeUtente.getText().toString(),
-                                                    cognomeUtente.getText().toString(),
-                                                    mailUtente.getText().toString(),
-                                                     telefonoUtente.getText().toString());
-
-                /*Caricamento dati utente sul database*/
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
+            public void onClick(View v) {
 
 
 
-                // Caricamento dati su firestore
-                Map<String, Object> user = new HashMap<>();
-                user.put("nomeUtente",nomeUtente.getText().toString());
-                user.put("cognomeUtente", cognomeUtente.getText().toString());
-                user.put("mailUtente", mailUtente.getText().toString());
-                user.put("telefonoUtente", telefonoUtente.getText().toString());
+                /*controllo dei campi tramite apposito metodo*/
+                if (controllo()) {
+
+                    Toast.makeText(getContext(),"Dati inseriti correttamente",Toast.LENGTH_LONG).show();
+                    // Caricamento dati su firestore
+                    Map<String, Object> user = new HashMap<>();
+                    user.put("nomeUtente", nomeUtente.getText().toString());
+                    user.put("cognomeUtente", cognomeUtente.getText().toString());
+                    user.put("mailUtente", mailUtente.getText().toString());
+                    user.put("telefonoUtente", telefonoUtente.getText().toString());
 
 
                 /* Inserimento della lettura del contatore all'evento click sul pulsante invia
                 La lettura viene legata al codice UID dell'utente loggato
                 * */
-                db.collection("user").document( FirebaseAuth.getInstance().getCurrentUser().getUid())
-                        .set(user, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("success", "DocumentSnapshot added with ID: ");
-                    }
-                })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.w("failure", "Error adding document", e);
-                            }
-                        });
+                    db.collection("user").document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                            .set(user, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d("success", "DocumentSnapshot added with ID: ");
+                        }
+                    })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.w("failure", "Error adding document", e);
+                                }
+                            });
 
+
+                } else {
+                    /*errore */
+                    Toast.makeText(getContext(),"Controllare i dati",Toast.LENGTH_LONG);
+                }
+
+                mListener.onUserInfoDialogOkPressed(nomeUtente.getText().toString(),
+                        cognomeUtente.getText().toString(),
+                        mailUtente.getText().toString(),
+                        telefonoUtente.getText().toString(),valoreControllo);
 
             }
+
         });
         return vM;
     }
@@ -146,4 +166,40 @@ public class UserInfoDialog extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
+
+    public boolean controllo(){
+             valoreControllo = true;
+        if(!validateNameSurname(nomeUtente.getText().toString())){
+            valoreControllo=false;
+            nomeUtente.setBackgroundColor(Color.RED);
+        }else{
+            nomeUtente.setBackgroundResource(0);
+        }
+        if(!validateNameSurname(cognomeUtente.getText().toString())){
+            valoreControllo= false;
+            cognomeUtente.setBackgroundColor(Color.RED);
+        }else{
+            cognomeUtente.setBackgroundResource(0);
+        }
+        if(mailUtente.getText().toString().equals("")){
+            valoreControllo=false;
+            mailUtente.setBackgroundColor(Color.RED);
+        }else{
+            mailUtente.setBackgroundResource(0);
+        }
+        if(!validatePhone(telefonoUtente.getText().toString())){
+            valoreControllo=false;
+            telefonoUtente.setBackgroundColor(Color.RED);
+        }else{
+            telefonoUtente.setBackgroundResource(0);
+        }
+        return  valoreControllo;
+    }
+
+    /*controllo campo telefono con regex (per telefoni italiani)*/
+    public static boolean validatePhone( String param )
+    {
+        return param.matches( "^(([+]|00)39)?((3[1-6][0-9]))(\\d{7})$" );
+    }
 }
+

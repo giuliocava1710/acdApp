@@ -16,8 +16,9 @@
         android:hint="Nome Utente"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/txtCognomeDialog"
-        app:layout_constraintEnd_toEndOf="@+id/txtCognomeDialog"
-        app:layout_constraintStart_toStartOf="@+id/txtCognomeDialog"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
 
     <EditText
@@ -29,8 +30,9 @@
         android:hint="Cognome Utente"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/txtMailDialog"
-        app:layout_constraintEnd_toEndOf="@+id/txtMailDialog"
-        app:layout_constraintStart_toStartOf="@+id/txtMailDialog"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtNomeDialog" />
 
     <EditText
@@ -42,8 +44,9 @@
         android:hint="Mail"
         android:inputType="textEmailAddress"
         app:layout_constraintBottom_toTopOf="@+id/txtTelefonoDialog"
-        app:layout_constraintEnd_toEndOf="@+id/txtTelefonoDialog"
-        app:layout_constraintStart_toStartOf="@+id/txtTelefonoDialog"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtCognomeDialog" />
 
 
@@ -56,8 +59,9 @@
         android:hint="Telefono"
         android:inputType="phone"
         app:layout_constraintBottom_toTopOf="@+id/btnConfermaDialog"
-        app:layout_constraintEnd_toEndOf="@+id/btnConfermaDialog"
-        app:layout_constraintStart_toStartOf="@+id/btnConfermaDialog"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtMailDialog" />
 
     <!-- text  field con material design di prova -->
@@ -66,12 +70,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:hint="@string/hint_text"
+
         app:layout_constraintBottom_toTopOf="@+id/txtNomeDialog"
-        app:layout_constraintEnd_toEndOf="@+id/txtNomeDialog"
-        app:layout_constraintStart_toStartOf="@+id/txtNomeDialog"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/lblProva"
             android:layout_width="218dp"
             android:layout_height="wrap_content" />
 
@@ -86,6 +93,7 @@
         android:text="Conferma"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtTelefonoDialog" />
 
