@@ -40,10 +40,10 @@ public class AdapterLetture extends RecyclerView.Adapter<AdapterLetture.LettureV
     @Override
     public void onBindViewHolder(@NonNull LettureViewHolder holder, int position) {
         Lettura lettura = listaLetture.get(position);
-        holder.codiceUser.setText(lettura.codiceUser);
-        holder.codiceUtenteBolletta.setText(lettura.codiceUtenteBolletta);
-        holder.nomeUtente.setText(lettura.nomeUtente);
-        holder.cognomeUtente.setText(lettura.cognomeUtente);
+        holder.codiceUser.setText("Codice User: "+lettura.codiceUser);
+        holder.codiceUtenteBolletta.setText("Codice Utente: "+lettura.codiceUtenteBolletta);
+        holder.nomeUtente.setText("Nome: "+lettura.nomeUtente);
+        holder.cognomeUtente.setText("Cognome: "+lettura.cognomeUtente);
         holder.valoreLettura.setText("Valore lettura: " + lettura.valoreLettura);
         holder.data.setText("Data: " + lettura.data);
 

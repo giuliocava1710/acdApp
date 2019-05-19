@@ -99,7 +99,6 @@ public class MainActivity<setOnClickListener> extends AppCompatActivity  impleme
         nomeUtente = (EditText) findViewById(R.id.txtNomeUtente);
         cognomeUtente = (EditText) findViewById(R.id.txtCognomeUtente);
         valoreLettura = (EditText) findViewById(R.id.txtValoreLettura);
-
         txtDate =  (EditText) findViewById(R.id.txtDate) ;
          //FirebaseApp.initializeApp(this);
 
@@ -108,45 +107,63 @@ public class MainActivity<setOnClickListener> extends AppCompatActivity  impleme
 
         context = getApplicationContext();
 
-        /*Passo oggetto user a dialog*/
-        ArrayList <String>infoUtente = new ArrayList<>();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String userid = user.getUid();
 
-        /*prendo informazionin dell'utente loggato*/
-        infoUtente.add(0,user.getDisplayName());
-        infoUtente.add(1,user.getEmail());
+        /*controllo se l'utente è gia stato loggato e quindi ha gia inserito le sue informazioni nel database altrimenti
+        * procedo a offrire l'interfaccia per eseguire le autoletture*/
+        db.collection("user").document(userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()){
+                    DocumentSnapshot doc = task.getResult();
+                    if(!doc.exists()){
+                        /*L'utente non è presente nel db perciò deve confermare le sue credenziali*/
 
+                        /*Passo oggetto user a dialog*/
+                        ArrayList <String>infoUtente = new ArrayList<>();
 
-        /*Se il telefono dell'utente è disponibile viene estratto e inserito nel
-        * db altrimenti si inserisce una stringa vuota */
-        if(user.getPhoneNumber()!= null){
-            Toast toast = new Toast(context);
-            toast.makeText(context,user.getPhoneNumber().toString(),Toast.LENGTH_LONG);
-            infoUtente.add(2,user.getPhoneNumber());
-        }else{
-            infoUtente.add(2,"");
-        }
-
-        /*il codice utente viene preipostato e posto nel in un campo della raccolta letture
-        * le letture avranno un codice che viene creato automaticamente da firebase*/
-
-
-       /*codice utente su firebase*/
-       codiceUser = user.getUid().toString();
+                        /*prendo informazionin dell'utente loggato*/
+                        infoUtente.add(0,user.getDisplayName());
+                        infoUtente.add(1,user.getEmail());
 
 
+                        /*Se il telefono dell'utente è disponibile viene estratto e inserito nel
+                         * db altrimenti si inserisce una stringa vuota */
+                        if(user.getPhoneNumber()!= null){
+                            Toast toast = new Toast(context);
+                            toast.makeText(context,user.getPhoneNumber().toString(),Toast.LENGTH_LONG);
+                            infoUtente.add(2,user.getPhoneNumber());
+                        }else{
+                            infoUtente.add(2,"");
+                        }
 
-        /*instanzia il dialog per conferma delle informazioni*/
-        dialog = UserInfoDialog.newInstance();
-
-        final Bundle bundle = new Bundle();
-        /*passaggio dei dati al dialog tramite Bundle*/
-        bundle.putSerializable("UserBundle", infoUtente);
-        dialog.setArguments(bundle);
+                        /*il codice utente viene preipostato e posto nel in un campo della raccolta letture
+                         * le letture avranno un codice che viene creato automaticamente da firebase*/
 
 
-        /*evita che con un doppio tap l'utente skippi il dialog*/
-        dialog.setCancelable(false);
-        dialog.show(getSupportFragmentManager(), "USER INFO DIALOG");
+                        /*instanzia il dialog per conferma delle informazioni*/
+                        dialog = UserInfoDialog.newInstance();
+
+                        final Bundle bundle = new Bundle();
+                        /*passaggio dei dati al dialog tramite Bundle*/
+                        bundle.putSerializable("UserBundle", infoUtente);
+                        dialog.setArguments(bundle);
+
+
+                        /*evita che con un doppio tap l'utente skippi il dialog*/
+                        dialog.setCancelable(false);
+                        dialog.show(getSupportFragmentManager(), "USER INFO DIALOG");
+
+
+
+                    }
+                }
+            }
+        });
+
+        /*codice utente su firebase*/
+        codiceUser = user.getUid().toString();
 
 
         /*Setta nella text field  la data corrente*/

@@ -15,6 +15,11 @@ import android.view.View;
 
 import java.util.ArrayList;
 
+
+/*activity di colegamento che contiene solamente il fragment che visualizza le autoletture svolte dall'utente
+* infatti per tornare alla main occorre che  cliccare due volte indietro una per chiudere il fragment e l'altra
+* per chiudere questa activity che lo contiene */
+
 public class ActivityStorico extends AppCompatActivity {
 
     @Override
