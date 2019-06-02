@@ -26,6 +26,10 @@ import com.google.firebase.auth.UserInfo;
 import java.util.Arrays;
 import java.util.List;
 
+/*  DESCRIZIONE:
+   Classe che gestisce il login tramite i due metodi disponibili: Google account oppure Mail e Password.
+   Si appoggia al sistema firebase Authentication.
+* */
 
 public class SignInActivity extends AppCompatActivity {
 

@@ -17,10 +17,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.Continuation;
@@ -52,22 +54,13 @@ import java.util.Objects;
 import static android.graphics.Color.*;
 
 
-/*APPUNNTI:
-* Il nome e cognome nella lettura lasciamo la possibilità di cambiarlo perchè l'utente puo eseguire le letture per
-* la mamma o il papa anziani quindi risulteranno eseguite con il su account ma a nome del diretto interessato.
-* L'utente immette il codice utente che trova sulla bolletta , il codice login di firebase viene anche esso inserito nel
-* nella raccolta letture una volta inserita la lettura.
-*
-* ROBA DA FARE:
-* - La main che contiene il form per la lettura dovrebbe essere un fragment che si apre dalla botton nav, la quale contiene
-* anche il pulsante che apre un altro fragment che mosta lo storico delle letture.
-* - Controllo sui campi del dialog l'utente deve immettere un telefono e se cambia i campi devono rispettare le regex
-*   finchè i dati non sono accettabili il dialog non si deve chiudere
-* - Indicare all'utente come compilare il form della lettura.
-* - vedere per export in cvs del db firebase
-**/
+/*
+    DESCRIZIONE:
+    La main è il fulcro dell'applicazione. E' composta dal form compilato dall'utente per effetturare le autoletture.
+    Un bottone permette di visualizzare lo storico delle autoletture effettuate.
+* */
 
-public class MainActivity<setOnClickListener> extends AppCompatActivity  implements UserInfoDialog.UserInfoDialogListener {
+public class MainActivity<setOnClickListener> extends AppCompatActivity  implements UserInfoDialog.UserInfoDialogListener, FragmentInfoLetture.OnFragmentInteractionListener {
 
     Context context;
     UserInfoDialog dialog;
@@ -82,6 +75,8 @@ public class MainActivity<setOnClickListener> extends AppCompatActivity  impleme
     private EditText valoreLettura;
     private String imagePath = "";
     private Uri pathInternal;
+
+    private Button btnInfo;
 
     private Button btnStorico;
 
@@ -100,7 +95,58 @@ public class MainActivity<setOnClickListener> extends AppCompatActivity  impleme
         cognomeUtente = (EditText) findViewById(R.id.txtCognomeUtente);
         valoreLettura = (EditText) findViewById(R.id.txtValoreLettura);
         txtDate =  (EditText) findViewById(R.id.txtDate) ;
+
+
+
+
+        btnInfo = (Button)findViewById(R.id.btnInfo);
          //FirebaseApp.initializeApp(this);
+
+        btnInfo.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("ResourceType")
+            @Override
+            public void onClick(View v) {
+
+
+                /*
+
+                FragmentManager manager = getSupportFragmentManager();
+                FragmentTransaction transaction = manager.beginTransaction();
+                transaction.add(R.id.frameLayoutInfo,fil,"Fragment informazioni Lettura");
+                transaction.addToBackStack(null);
+                transaction.commit();
+
+                */
+
+                FragmentInfoLetture fil = FragmentInfoLetture.newInstance(null,null);
+                // create a frame layout
+                FrameLayout fragmentLayout = new FrameLayout(getApplicationContext());
+                // set the layout params to fill the activity
+                fragmentLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                // set an id to the layout
+                fragmentLayout.setId(1000); // some positive integer
+                // set the layout as Activity content
+                setContentView(fragmentLayout);
+                // Finally , add the fragment
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .add(1000,fil).commit();  // 1000 - is the id set for the container layout
+
+
+
+
+                /*
+                FragmentStoricoLetture fm = FragmentStoricoLetture.newInstance(null,null);
+                FragmentManager fMan = getSupportFragmentManager();
+                fMan.beginTransaction().replace(R.id.frameLayoutStorico,fm,"fragment storico").commit();
+                */
+
+
+
+            }
+        });
+
+
 
          user =  FirebaseAuth.getInstance().getCurrentUser();
         Log.d("USERINFO", "Nome : " + user.getDisplayName() + " Codice : " + user.getUid());
@@ -473,5 +519,23 @@ public class MainActivity<setOnClickListener> extends AppCompatActivity  impleme
         txtDate.setText(sdf.format(myCalendar.getTime()));
     }
 
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
 }
 
+/*APPUNNTI:
+ * Il nome e cognome nella lettura lasciamo la possibilità di cambiarlo perchè l'utente puo eseguire le letture per
+ * la mamma o il papa anziani quindi risulteranno eseguite con il su account ma a nome del diretto interessato.
+ * L'utente immette il codice utente che trova sulla bolletta , il codice login di firebase viene anche esso inserito nel
+ * nella raccolta letture una volta inserita la lettura.
+ *
+ * ROBA DA FARE:
+ * - La main che contiene il form per la lettura dovrebbe essere un fragment che si apre dalla botton nav, la quale contiene
+ * anche il pulsante che apre un altro fragment che mosta lo storico delle letture.
+ * - Controllo sui campi del dialog l'utente deve immettere un telefono e se cambia i campi devono rispettare le regex
+ *   finchè i dati non sono accettabili il dialog non si deve chiudere
+ * - Indicare all'utente come compilare il form della lettura.
+ * - vedere per export in cvs del db firebase
+ **/

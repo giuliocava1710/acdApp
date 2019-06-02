@@ -17,6 +17,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/* DESCRIZIONE:
+* Questa classe crea una struttura composta da tanti oggetti di tipo letture quante sono le letture relative
+* all'utente loggato presenti nel db. Questa struttura dovra essere compatible quindi riuscire a lavorare con
+* la Recycler View presente nel layout del FragmentStoricoLetture*/
+
 public class AdapterLetture extends RecyclerView.Adapter<AdapterLetture.LettureViewHolder> {
 
     private Context mCtx;
@@ -37,6 +42,9 @@ public class AdapterLetture extends RecyclerView.Adapter<AdapterLetture.LettureV
                 null, false));
     }
 
+    /* Dal nostro Arraylist contenente tutti i dati delle letture lette dal db genero questi oggetti
+    * i quali graficamente saranno delle card che verranno disposti uno sotto l'altro nella
+    * recycler View del FragmentStoricoLetture */
     @Override
     public void onBindViewHolder(@NonNull LettureViewHolder holder, int position) {
         Lettura lettura = listaLetture.get(position);

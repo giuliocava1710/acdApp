@@ -28,17 +28,14 @@ import java.util.Map;
 
 import static com.Acdapp.app.MainActivity.validateNameSurname;
 
-/*bisogna vedere come indicare i campi obbligatori  che l'utente deve confermare o evetualmente inserire
-* incare con un asterisco e controllare la validatà dei campi , quidi inserire dati nel db
-* 1) aggiungere delle label che indicano i campi da confermare ,per ora ci sono solo text box
-* 2)controllare campo telefono se viene settato oppure no
-* 3) vedere questione fragment e storico letture , possibilità all utetente di fare piu lettura
-* adesso se l'utente immette una due letture la seconda sovrascrive la prima///TODO
 
 
-/*dialog creato dopo il login che prima di dare accesso alla main activity chiedi all'utente di confermare le informazioni
+
+/* DESCRIZIONE:
+Dialog creato dopo il login che prima di dare accesso alla main activity chiedi all'utente di confermare le informazioni
 * in questo modo ci facciamo inserire nome e cognome come due informazioni divise e le poniamo nella tabella dell'anagrafica utenti
 * nel database*/
+
 public class UserInfoDialog extends DialogFragment {
 
     UserInfoDialogListener mListener = null;
@@ -203,3 +200,9 @@ public class UserInfoDialog extends DialogFragment {
     }
 }
 
+/*bisogna vedere come indicare i campi obbligatori  che l'utente deve confermare o evetualmente inserire
+ * incare con un asterisco e controllare la validatà dei campi , quidi inserire dati nel db
+ * 1) aggiungere delle label che indicano i campi da confermare ,per ora ci sono solo text box
+ * 2)controllare campo telefono se viene settato oppure no
+ * 3) vedere questione fragment e storico letture , possibilità all utetente di fare piu lettura
+ * adesso se l'utente immette una due letture la seconda sovrascrive la prima*/ /// TODO

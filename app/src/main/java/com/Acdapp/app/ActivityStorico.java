@@ -16,14 +16,17 @@ import android.view.View;
 import java.util.ArrayList;
 
 
-/*activity di colegamento che contiene solamente il fragment che visualizza le autoletture svolte dall'utente
-* infatti per tornare alla main occorre che  cliccare due volte indietro una per chiudere il fragment e l'altra
-* per chiudere questa activity che lo contiene */
+/*
+DESCRIZIONE:
+  Activity di collegamento che contenente il fragment il quale visualizza le autoletture svolte dall'utente loggato
+* infatti per tornare alla main occorre  cliccare due volte il tasto indietro la prima per chiudere il fragment
+ * e la seconda per chiudere l' Activity */
 
 public class ActivityStorico extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_storico);
 
@@ -32,6 +35,7 @@ public class ActivityStorico extends AppCompatActivity {
 
         //for(Lettura lettura : letture) Log.d("LETTURA", lettura.toString());
 
+        /*Appena lanciata l'activity si limita a lanciare il fragment dello storico*/
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.replace(R.id.frame, FragmentStoricoLetture.newInstance(letture),"Fragment storico letture");

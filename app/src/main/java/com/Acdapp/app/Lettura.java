@@ -5,7 +5,11 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import java.io.Serializable;
 import java.util.Date;
 
-/*Oggetto lettura che rappresenta il singolo record della tabella letture sul db*/
+/* DESCRIZIONE:
+   Oggetto lettura che rappresenta il singolo record della tabella letture sul db.
+   Al momento della lettura dal db delle singole letture dell'utente viene craato un
+   Arraylist di oggetti di questa classe.
+   */
 public class Lettura implements Serializable {
     public String codiceUtenteBolletta,codiceUser,nomeUtente,cognomeUtente,data,imagePath;
     public String valoreLettura;
